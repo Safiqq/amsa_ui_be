@@ -72,6 +72,7 @@ app.post('/upload',
   ],
   async (req, res) => {
     const errors = validationResult(req);
+    res.setHeader("Access-Control-Allow-Origin", "*");
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
