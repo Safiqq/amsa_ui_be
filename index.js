@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require('express');
+const fileUpload = require("express-fileupload");
 const mongoose = require('mongoose');
-const { body, validationResult } = require('express-validator');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 
@@ -23,15 +23,14 @@ app.use(
 );
 
 // Set body limit
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // Use body parser
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.DB, {
+mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -52,10 +51,11 @@ const dataSchema = new mongoose.Schema({
   bundle: Number,
   kodeReferral: String,
   buktiTransfer: {
-    data: Buffer,
-    contentType: String
+    file: Buffer,
+    filename: String,
+    mimetype: String,
   },
-  namaAkunTransfer: String
+  namaAkunTransfer: String,
 });
 
 // Create a model for the data collection
@@ -63,43 +63,36 @@ const Data = mongoose.model('Regist', dataSchema);
 
 // Define a route for handling form data and file uploads
 app.post('/upload',
-  [
-    body('nama').notEmpty().withMessage('Nama tidak boleh kosong'),
-    body('noHp').notEmpty().withMessage('Nomor HP tidak boleh kosong'),
-    body('email').notEmpty().withMessage('Email tidak boleh kosong').isEmail().withMessage('Email tidak valid'),
-    body('instansi').notEmpty().withMessage('Instansi tidak boleh kosong'),
-    body('pekerjaan').notEmpty().withMessage('Pekerjaan tidak boleh kosong'),
-    body('bundle').notEmpty().withMessage('Bundle tidak boleh kosong'),
-    body('namaAkunTransfer').notEmpty().withMessage('Nama Akun Transfer tidak boleh kosong')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-      const data = new Data({
-        nama: req.body.nama,
-        noHp: req.body.noHp,
-        email: req.body.email,
-        instansi: req.body.instansi,
-        pekerjaan: req.body.pekerjaan,
-        bundle: req.body.bundle,
-        kodeReferral: req.body.kodeReferral,
-        buktiTransfer: {
-          data: req.body.data,
-          contentType: req.body.contentType
-        },
-        namaAkunTransfer: req.body.namaAkunTransfer
-      });
-      await data.save();
-      return res.status(201).json({ message: 'Data and file uploaded successfully' });
-    } catch (error) {
-      console.error('Error uploading data and file:', error);
-      return res.status(500).json({ message: 'Error uploading data and file' });
-    }
+  fileUpload({ createParentPath: true }),
+  (req, res) => {
+    Data.findOne({ email: req.body.email.trim() }).then(user => {
+      if (user) {
+        return res.status(500).json({ statusCode: 500, message: 'Email sudah terdaftar' });
+      } else {
+        try {
+          const data = new Data({
+            nama: req.body.nama.trim(),
+            noHp: req.body.noHp.trim(),
+            email: req.body.email.trim(),
+            instansi: req.body.instansi.trim(),
+            pekerjaan: req.body.pekerjaan.trim(),
+            bundle: req.body.bundle,
+            kodeReferral: req.body.kodeReferral.trim(),
+            buktiTransfer: {
+              file: req.body.buktiTransfer.file,
+              filename: req.body.buktiTransfer.filename,
+              mimetype: req.body.buktiTransfer.mimetype,
+            },
+            namaAkunTransfer: req.body.namaAkunTransfer.trim()
+          });
+          data.save();
+          return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
+        } catch (error) {
+          console.error('Error uploading data and file:', error);
+          return res.status(500).json({ statusCode: 500, message: 'Error uploading data and file' });
+        }
+      }
+    })
   }
 );
 
