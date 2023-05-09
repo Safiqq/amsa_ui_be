@@ -8,7 +8,22 @@ const cors = require('cors');
 const app = express();
 
 // Enable CORS for all routes
-app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-type, Authorization");
+  next();
+});
+
+// cors
+var cors = require("cors");
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 
 // Set up multer middleware to handle file uploads
 const storage = multer.memoryStorage();
