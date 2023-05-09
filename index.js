@@ -23,8 +23,8 @@ app.use(
 );
 
 // Set body limit
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb'}));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb' }));
 
 // Set up multer middleware to handle file uploads
 const storage = multer.diskStorage({
@@ -103,10 +103,10 @@ app.post('/upload',
         namaAkunTransfer: req.body.namaAkunTransfer
       });
       await data.save();
-      return res.status(201).send('Data and file uploaded successfully');
+      return res.status(201).json({ message: 'Data and file uploaded successfully' });
     } catch (error) {
       console.error('Error uploading data and file:', error);
-      return res.status(500).send('Error uploading data and file');
+      return res.status(500).json({ message: 'Error uploading data and file' });
     }
   }
 );
