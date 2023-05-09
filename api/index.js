@@ -30,6 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(bodyParser.json());
 
 // Connect to MongoDB
+mongoose.set("strictQuery", false);
 mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
