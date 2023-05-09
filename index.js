@@ -3,8 +3,12 @@ const express = require('express');
 const multer = require('multer');
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
+const cors = require('cors');
 
 const app = express();
+
+// Enable CORS for all routes
+app.use(cors());
 
 // Set up multer middleware to handle file uploads
 const storage = multer.memoryStorage();
@@ -56,7 +60,7 @@ app.post('/upload',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).header('Access-Control-Allow-Origin', '*').json({ errors: errors.array() });
     }
 
     try {
@@ -75,10 +79,10 @@ app.post('/upload',
         namaAkunTransfer: req.body.namaAkunTransfer
       });
       await data.save();
-      res.status(201).send('Data and file uploaded successfully');
+      res.status(201).header('Access-Control-Allow-Origin', '*').send('Data and file uploaded successfully');
     } catch (error) {
       console.error('Error uploading data and file:', error);
-      res.status(500).send('Error uploading data and file');
+      res.status(500).header('Access-Control-Allow-Origin', '*').send('Error uploading data and file');
     }
   }
 );
