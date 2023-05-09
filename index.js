@@ -1,90 +1,90 @@
 require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
+const express = require('express');
+const multer = require('multer');
+const mongoose = require('mongoose');
+const { body, validationResult } = require('express-validator');
+
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-type, Authorization");
-  next();
-});
+// Set up multer middleware to handle file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
-// cors
-var cors = require("cors");
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-    optionsSuccessStatus: 200,
+// Connect to MongoDB
+mongoose.connect(process.env.DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => {
+    console.log('Connected to MongoDB');
   })
-);
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });
 
-// body parser
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-mongoose.set("strictQuery", false);
-connection();
-async function connection() {
-  try {
-    const connectionParams = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    };
-    await mongoose.connect(process.env.DB, connectionParams);
-    console.log("connected to database");
-  } catch (error) {
-    console.log(error);
-    console.log("could not connect to database");
-  }
-}
-
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads");
+// Define a schema for the data collection
+const dataSchema = new mongoose.Schema({
+  nama: String,
+  noHp: String,
+  email: String,
+  instansi: String,
+  pekerjaan: String,
+  bundle: Number,
+  kodeReferral: String,
+  buktiTransfer: {
+    data: Buffer,
+    contentType: String
   },
-  filename: function (req, file, cb) {
-    cb(null, new Date().getTime() + "-" + file.originalname);
-  },
+  namaAkunTransfer: String
 });
 
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg"
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
+// Create a model for the data collection
+const Data = mongoose.model('Regist', dataSchema);
 
-const path = require("path");
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use(
-  multer({ storage: storage, fileFilter: fileFilter }).fields([
-    {
-      name: "kartu_identitas",
-      maxCount: 1,
-    },
-    {
-      name: "surat_keterangan",
-      maxCount: 1,
-    },
-    {
-      name: "bukti_pembayaran",
-      maxCount: 1,
-    },
-  ])
+// Define a route for handling form data and file uploads
+app.post('/upload',
+  upload.single('buktiTransfer'),
+  [
+    body('nama').notEmpty().withMessage('Nama tidak boleh kosong'),
+    body('noHp').notEmpty().withMessage('Nomor HP tidak boleh kosong'),
+    body('email').notEmpty().withMessage('Email tidak boleh kosong').isEmail().withMessage('Email tidak valid'),
+    body('instansi').notEmpty().withMessage('Instansi tidak boleh kosong'),
+    body('pekerjaan').notEmpty().withMessage('Pekerjaan tidak boleh kosong'),
+    body('bundle').notEmpty().withMessage('Bundle tidak boleh kosong'),
+    body('namaAkunTransfer').notEmpty().withMessage('Nama Akun Transfer tidak boleh kosong')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const data = new Data({
+        nama: req.body.nama,
+        noHp: req.body.noHp,
+        email: req.body.email,
+        instansi: req.body.instansi,
+        pekerjaan: req.body.pekerjaan,
+        bundle: req.body.bundle,
+        kodeReferral: req.body.kodeReferral,
+        buktiTransfer: {
+          data: req.file.buffer,
+          contentType: req.file.mimetype
+        },
+        namaAkunTransfer: req.body.namaAkunTransfer
+      });
+      await data.save();
+      res.status(201).send('Data and file uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading data and file:', error);
+      res.status(500).send('Error uploading data and file');
+    }
+  }
 );
 
-const routes = require("./src/Routes");
-app.use("/api", routes);
-
-const port = 8080;
-app.listen(port, console.log(`Listening on port ${port}...`));
+// Start the server
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
