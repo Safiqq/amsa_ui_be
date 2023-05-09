@@ -87,8 +87,8 @@ app.post('/upload',
         bundle: req.body.bundle,
         kodeReferral: req.body.kodeReferral,
         buktiTransfer: {
-          data: req.file.buffer,
-          contentType: req.file.mimetype
+          data: req.body.data,
+          contentType: req.body.contentType
         },
         namaAkunTransfer: req.body.namaAkunTransfer
       });
