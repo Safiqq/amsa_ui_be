@@ -93,10 +93,10 @@ app.post('/upload',
         namaAkunTransfer: req.body.namaAkunTransfer
       });
       await data.save();
-      res.status(201).send('Data and file uploaded successfully');
+      return res.status(201).send('Data and file uploaded successfully');
     } catch (error) {
       console.error('Error uploading data and file:', error);
-      res.status(500).send('Error uploading data and file');
+      return res.status(500).send('Error uploading data and file');
     }
   }
 );
