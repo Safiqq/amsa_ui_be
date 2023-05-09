@@ -52,7 +52,7 @@ const dataSchema = new mongoose.Schema({
   bundle: Number,
   kodeReferral: String,
   buktiTransfer: {
-    file: Buffer,
+    file: String,
     filename: String,
     mimetype: String,
   },
