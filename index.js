@@ -4,6 +4,7 @@ const multer = require('multer');
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
+const bodyParser = require("body-parser");
 
 const app = express();
 
@@ -21,6 +22,9 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
+
+// Use body parser
+app.use(bodyParser.json());
 
 // Set body limit
 app.use(express.json({ limit: '50mb' }));
