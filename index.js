@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require('express');
-const multer = require('multer');
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
@@ -30,30 +29,6 @@ app.use(express.urlencoded({ limit: '50mb' }));
 // Use body parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-// Set up multer middleware to handle file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    console.log(req);
-    console.log("req1");
-    console.log(file);
-    console.log("file1");
-    cb(null, 'uploads')
-  },
-  filename: function (req, file, cb) {
-    console.log(req);
-    console.log("req2");
-    console.log(file);
-    console.log("file2");
-    cb(null, file.fieldname + '-' + Date.now())
-  }
-});
-
-// Create a Multer object with a maximum file size of 10MB
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }
-});
 
 // Connect to MongoDB
 mongoose.connect(process.env.DB, {
@@ -88,7 +63,6 @@ const Data = mongoose.model('Regist', dataSchema);
 
 // Define a route for handling form data and file uploads
 app.post('/upload',
-  upload.single('buktiTransfer'),
   [
     body('nama').notEmpty().withMessage('Nama tidak boleh kosong'),
     body('noHp').notEmpty().withMessage('Nomor HP tidak boleh kosong'),
