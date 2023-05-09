@@ -23,23 +23,37 @@ app.use(
   })
 );
 
-// Use body parser
-app.use(bodyParser.json());
-
 // Set body limit
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
 
+// Use body parser
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 // Set up multer middleware to handle file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log(req);
+    console.log("req1");
+    console.log(file);
+    console.log("file1");
     cb(null, 'uploads')
   },
   filename: function (req, file, cb) {
+    console.log(req);
+    console.log("req2");
+    console.log(file);
+    console.log("file2");
     cb(null, file.fieldname + '-' + Date.now())
   }
 });
-const upload = multer({ storage: storage });
+
+// Create a Multer object with a maximum file size of 10MB
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.DB, {
