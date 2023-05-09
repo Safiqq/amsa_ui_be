@@ -57,6 +57,7 @@ const dataSchema = new mongoose.Schema({
     mimetype: String,
   },
   namaAkunTransfer: String,
+  bundleBuddies: [String],
 });
 
 // Create a model for the data collection
@@ -97,7 +98,8 @@ app.post('/upload',
               filename: req.body.buktiTransfer.filename,
               mimetype: req.body.buktiTransfer.mimetype,
             },
-            namaAkunTransfer: req.body.namaAkunTransfer.trim()
+            namaAkunTransfer: req.body.namaAkunTransfer.trim(),
+            bundleBuddies: req.body.bundleBuddies
           });
           data.save();
           return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
