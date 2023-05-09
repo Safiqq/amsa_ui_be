@@ -62,6 +62,19 @@ const dataSchema = new mongoose.Schema({
 // Create a model for the data collection
 const Data = mongoose.model('Regist', dataSchema);
 
+// Define a route for getting datas
+app.get('/getData',
+  async (req, res) => {
+    try {
+      const datas = await Data.find({});
+      res.send(datas);
+      console.log(datas);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
 // Define a route for handling form data and file uploads
 app.post('/upload',
   fileUpload({ createParentPath: true }),
