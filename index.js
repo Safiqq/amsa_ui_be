@@ -15,8 +15,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// cors
-var cors = require("cors");
 app.use(
   cors({
     origin: "*",
