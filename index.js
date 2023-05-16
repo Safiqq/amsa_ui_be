@@ -77,13 +77,11 @@ app.get('/getData',
 
 // Define a route for handling form data and file uploads
 app.post('/upload',
-  fileUpload({ createParentPath: true }),
-  (req, res) => {
+  fileUpload({ createParentPath: true }), (req, res) => {
     Data.findOne({ email: req.body.email.trim() }).then(user => {
       if (user) {
         return res.status(500).json({ statusCode: 500, message: 'Email sudah terdaftar' });
       } else {
-        const documentIds = [];
         const emails = [];
         try {
           const data = new Data({
@@ -102,14 +100,14 @@ app.post('/upload',
             },
             namaAkunTransfer: req.body.namaAkunTransfer.trim(),
           });
-          documentIds.push(data.save()._id);
+          data.save();
           emails.push(data.email);
 
           const bundleBuddies = req.body.bundleBuddies;
           for (let i = 0; i < bundleBuddies.length; i++) {
             let email = bundleBuddies[i].email.trim();
             if (emails.indexOf(email) === -1) {
-              console.log(user);
+              // console.log(user);
               const dataBuddies = new Data({
                 nama: bundleBuddies[i].nama.trim(),
                 noHp: bundleBuddies[i].noHp.trim(),
@@ -120,16 +118,19 @@ app.post('/upload',
                 kodeReferral: req.body.kodeReferral.trim(),
                 namaAkunTransfer: req.body.namaAkunTransfer.trim(),
               });
-              documentIds.push(dataBuddies.save()._id);
+              dataBuddies.save();
               emails.push(dataBuddies.email);
             } else {
+              for (let i = 0; i < emails.length; i++) {
+                Data.deleteOne({ email: emails[i] });
+              }
               return res.status(500).json({ statusCode: 500, message: 'Email sudah terdaftar' });
             }
           }
           return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
         } catch (error) {
-          for (let i = 0; i < documentIds.length; i++) {
-            Data.deleteOne({ _id: documentIds[i] });
+          for (let i = 0; i < emails.length; i++) {
+            Data.deleteOne({ email: emails[i] });
           }
           console.error('Error uploading data and file:', error);
           // if (error.message === 'Email sudah terdaftar') {
