@@ -79,16 +79,17 @@ app.get('/getData',
 app.get('/getImage',
   async (req, res) => {
     try {
-      const datas = await Data.find({ _id: req.query.id });
+      let id = new mongoose.mongo.ObjectId(req.query.id);
+      const datas = await Data.find({ _id: id });
       if (datas.length > 0) {
-        const imageBuffer = Buffer.from(datas[0].buktiTransfer.file, 'base64');
-        res.setHeader('Content-Type', datas[0].buktiTransfer.mimetype);
+        const data = datas[0];
+        const imageBuffer = Buffer.from(data.buktiTransfer.file.split(',')[1], 'base64');
+        res.setHeader('Content-Type', data.buktiTransfer.mimetype);
         res.setHeader('Content-Length', imageBuffer.length);
         res.end(imageBuffer);
       } else {
         res.send("Image not found.");
       }
-      console.log(datas);
     } catch (err) {
       console.log(err);
     }
