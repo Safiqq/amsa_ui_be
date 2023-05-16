@@ -93,7 +93,7 @@ app.post('/upload',
             instansi: req.body.instansi.trim(),
             pekerjaan: req.body.pekerjaan.trim(),
             bundle: req.body.bundle,
-            day: day,
+            day: req.body.day,
             kodeReferral: req.body.kodeReferral.trim(),
             buktiTransfer: {
               file: req.body.buktiTransfer.file,
