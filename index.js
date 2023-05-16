@@ -50,6 +50,7 @@ const dataSchema = new mongoose.Schema({
   instansi: String,
   pekerjaan: String,
   bundle: Number,
+  day: Number,
   kodeReferral: String,
   buktiTransfer: {
     file: String,
@@ -129,6 +130,7 @@ app.post('/upload',
           instansi: bundleBuddies[i].instansi.trim(),
           pekerjaan: req.body.pekerjaan.trim(),
           bundle: req.body.bundle,
+          day: req.body.day,
           kodeReferral: req.body.kodeReferral.trim(),
           namaAkunTransfer: req.body.namaAkunTransfer.trim(),
         });
