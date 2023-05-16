@@ -75,6 +75,22 @@ app.get('/getData',
   }
 );
 
+// Define a route for getting images
+app.get('/getImage',
+  async (req, res) => {
+    try {
+      const datas = await Data.find({ _id: req.query.id });
+      const imageBuffer = Buffer.from(datas[0].buktiTransfer.file, 'base64');
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Content-Length', imageBuffer.length);
+      res.end(imageBuffer);
+      console.log(datas);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
 // Define a route for handling form data and file uploads
 app.post('/upload',
   fileUpload({ createParentPath: true }), (req, res) => {
