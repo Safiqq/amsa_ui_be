@@ -57,7 +57,7 @@ const dataSchema = new mongoose.Schema({
     mimetype: String,
   },
   namaAkunTransfer: String,
-  bundleBuddies: [String],
+  bundleBuddies: [],
 });
 
 // Create a model for the data collection
@@ -99,9 +99,22 @@ app.post('/upload',
               mimetype: req.body.buktiTransfer.mimetype,
             },
             namaAkunTransfer: req.body.namaAkunTransfer.trim(),
-            bundleBuddies: req.body.bundleBuddies
           });
           data.save();
+          for (let i = 0; i < req.body.bundleBuddies.length; i++) {
+            const bundleBuddies = req.body.bundleBuddies;
+            const dataBuddies = new Data({
+              nama: bundleBuddies[i].nama.trim(),
+              noHp: bundleBuddies[i].noHp.trim(),
+              email: bundleBuddies[i].email.trim(),
+              instansi: bundleBuddies[i].instansi.trim(),
+              pekerjaan: req.body.pekerjaan.trim(),
+              bundle: req.body.bundle,
+              kodeReferral: req.body.kodeReferral.trim(),
+              namaAkunTransfer: req.body.namaAkunTransfer.trim(),
+            });
+            dataBuddies.save();
+          }
           return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
         } catch (error) {
           console.error('Error uploading data and file:', error);
