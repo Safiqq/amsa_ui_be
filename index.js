@@ -129,7 +129,7 @@ app.post('/upload',
           return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
         } catch (error) {
           for (let i = 0; i < documentIds.length; i++) {
-            Data.deleteOne({ _id: ObjectId(documentIds[i]) });
+            Data.deleteOne({ _id: documentIds[i] });
           }
           console.error('Error uploading data and file:', error);
           // if (error.message === 'Email sudah terdaftar') {
