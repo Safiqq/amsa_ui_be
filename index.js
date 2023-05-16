@@ -83,6 +83,8 @@ app.post('/upload',
       if (user) {
         return res.status(500).json({ statusCode: 500, message: 'Email sudah terdaftar' });
       } else {
+        const documentIds = [];
+        const emails = [];
         try {
           const data = new Data({
             nama: req.body.nama.trim(),
@@ -91,6 +93,7 @@ app.post('/upload',
             instansi: req.body.instansi.trim(),
             pekerjaan: req.body.pekerjaan.trim(),
             bundle: req.body.bundle,
+            day: day,
             kodeReferral: req.body.kodeReferral.trim(),
             buktiTransfer: {
               file: req.body.buktiTransfer.file,
@@ -99,21 +102,35 @@ app.post('/upload',
             },
             namaAkunTransfer: req.body.namaAkunTransfer.trim(),
           });
-          data.save();
-            const bundleBuddies = req.body.bundleBuddies;
-            const dataBuddies = new Data({
-              nama: bundleBuddies[0].nama.trim(),
-              noHp: bundleBuddies[0].noHp.trim(),
-              email: bundleBuddies[0].email.trim(),
-              instansi: bundleBuddies[0].instansi.trim(),
-              pekerjaan: req.body.pekerjaan.trim(),
-              bundle: req.body.bundle,
-              kodeReferral: req.body.kodeReferral.trim(),
-              namaAkunTransfer: req.body.namaAkunTransfer.trim(),
-            });
-            dataBuddies.save();
+          documentIds.push(data.save()._id);
+          emails.push(data.email);
+
+          const bundleBuddies = req.body.bundleBuddies;
+          for (let i = 0; i < bundleBuddies.length; i++) {
+            let email = bundleBuddies[i].email.trim();
+            if (emails.indexOf(email) === -1) {
+              console.log(user);
+              const dataBuddies = new Data({
+                nama: bundleBuddies[i].nama.trim(),
+                noHp: bundleBuddies[i].noHp.trim(),
+                email: email,
+                instansi: bundleBuddies[i].instansi.trim(),
+                pekerjaan: req.body.pekerjaan.trim(),
+                bundle: req.body.bundle,
+                kodeReferral: req.body.kodeReferral.trim(),
+                namaAkunTransfer: req.body.namaAkunTransfer.trim(),
+              });
+              documentIds.push(dataBuddies.save()._id);
+              emails.push(dataBuddies.email);
+            } else {
+              return res.status(500).json({ statusCode: 500, message: 'Email sudah terdaftar' });
+            }
+          }
           return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
         } catch (error) {
+          for (let i = 0; i < documentIds.length; i++) {
+            Data.deleteOne({ _id: ObjectId(documentIds[i]) });
+          }
           console.error('Error uploading data and file:', error);
           return res.status(500).json({ statusCode: 500, message: 'Error uploading data and file' });
         }
