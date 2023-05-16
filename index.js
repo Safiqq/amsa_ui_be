@@ -57,7 +57,6 @@ const dataSchema = new mongoose.Schema({
     mimetype: String,
   },
   namaAkunTransfer: String,
-  bundleBuddies: [],
 });
 
 // Create a model for the data collection
