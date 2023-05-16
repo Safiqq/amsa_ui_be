@@ -132,7 +132,11 @@ app.post('/upload',
             Data.deleteOne({ _id: ObjectId(documentIds[i]) });
           }
           console.error('Error uploading data and file:', error);
-          return res.status(500).json({ statusCode: 500, message: 'Error uploading data and file' });
+          // if (error.message === 'Email sudah terdaftar') {
+          return res.status(500).json({ statusCode: 500, message: error.message });
+          // } else {
+          //   return res.status(500).json({ statusCode: 500, message: 'Error uploading data and file' });
+          // }
         }
       }
     })
