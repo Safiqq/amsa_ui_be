@@ -100,20 +100,18 @@ app.post('/upload',
             namaAkunTransfer: req.body.namaAkunTransfer.trim(),
           });
           data.save();
-          for (let i = 0; i < req.body.bundleBuddies.length; i++) {
             const bundleBuddies = req.body.bundleBuddies;
             const dataBuddies = new Data({
-              nama: bundleBuddies[i].nama.trim(),
-              noHp: bundleBuddies[i].noHp.trim(),
-              email: bundleBuddies[i].email.trim(),
-              instansi: bundleBuddies[i].instansi.trim(),
+              nama: bundleBuddies[0].nama.trim(),
+              noHp: bundleBuddies[0].noHp.trim(),
+              email: bundleBuddies[0].email.trim(),
+              instansi: bundleBuddies[0].instansi.trim(),
               pekerjaan: req.body.pekerjaan.trim(),
               bundle: req.body.bundle,
               kodeReferral: req.body.kodeReferral.trim(),
               namaAkunTransfer: req.body.namaAkunTransfer.trim(),
             });
             dataBuddies.save();
-          }
           return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
         } catch (error) {
           console.error('Error uploading data and file:', error);
