@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require('express');
-const fileUpload = require("express-fileupload");
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require("body-parser");
@@ -9,9 +8,10 @@ const app = express();
 
 // Enable CORS for all routes
 app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
+  res.setHeader("Access-Control-Allow-Headers", "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version");
   next();
 });
 app.use(
@@ -25,9 +25,6 @@ app.use(
 // Set body limit
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-
-// Use body parser
-app.use(bodyParser.json());
 
 // Connect to MongoDB
 mongoose.set("strictQuery", false);
@@ -99,7 +96,7 @@ app.get('/getImage',
 
 // Define a route for handling form data and file uploads
 app.post('/upload',
-  fileUpload({ createParentPath: true }), (req, res) => {
+  async (req, res) => {
     try {
       const data = new Data({
         nama: req.body.nama.trim(),
