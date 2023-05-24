@@ -23,20 +23,21 @@ app.use(
 );
 
 // Set body limit
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
 // Connect to MongoDB
 mongoose.set("strictQuery", false);
-mongoose.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose
+  .connect(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log("Connected to MongoDB");
   })
   .catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
+    console.error("Error connecting to MongoDB:", error);
   });
 
 // Define a schema for the data collection
@@ -58,41 +59,40 @@ const dataSchema = new mongoose.Schema({
 });
 
 // Create a model for the data collection
-const Data = mongoose.model('Regist', dataSchema);
+const Data = mongoose.model("Regist", dataSchema);
 
 // Define a route for getting datas
-app.get('/getData',
-  async (req, res) => {
-    try {
-      const datas = await Data.find({});
-      res.send(datas);
-      console.log(datas);
-    } catch (err) {
-      console.log(err);
-    }
+app.get("/getData", async (req, res) => {
+  try {
+    const datas = await Data.find({});
+    res.send(datas);
+    console.log(datas);
+  } catch (err) {
+    console.log(err);
   }
-);
+});
 
 // Define a route for getting images
-app.get('/getImage',
-  async (req, res) => {
-    try {
-      let id = new mongoose.mongo.ObjectId(req.query.id);
-      const datas = await Data.find({ _id: id });
-      if (datas.length > 0) {
-        const data = datas[0];
-        const imageBuffer = Buffer.from(data.buktiTransfer.file.split(',')[1], 'base64');
-        res.setHeader('Content-Type', data.buktiTransfer.mimetype);
-        res.setHeader('Content-Length', imageBuffer.length);
-        res.end(imageBuffer);
-      } else {
-        res.send("Image not found.");
-      }
-    } catch (err) {
-      console.log(err);
+app.get("/getImage", async (req, res) => {
+  try {
+    let id = new mongoose.mongo.ObjectId(req.query.id);
+    const datas = await Data.find({ _id: id });
+    if (datas.length > 0) {
+      const data = datas[0];
+      const imageBuffer = Buffer.from(
+        data.buktiTransfer.file.split(",")[1],
+        "base64"
+      );
+      res.setHeader("Content-Type", data.buktiTransfer.mimetype);
+      res.setHeader("Content-Length", imageBuffer.length);
+      res.end(imageBuffer);
+    } else {
+      res.send("Image not found.");
     }
+  } catch (err) {
+    console.log(err);
   }
-);
+});
 
 // Define a route for handling form data and file uploads
 app.post('/upload',
@@ -133,20 +133,24 @@ app.post('/upload',
         });
         dataBuddies.save();
       }
-      return res.status(201).json({ statusCode: 201, message: 'Data and file uploaded successfully' });
+      return res.status(201).json({
+        statusCode: 201,
+        message: "Data and file uploaded successfully",
+      });
     } catch (error) {
       for (let i = 0; i < emails.length; i++) {
         Data.deleteOne({ email: emails[i] });
       }
-      console.error('Error uploading data and file:', error);
+      console.error("Error uploading data and file:", error);
       // if (error.message === 'Email sudah terdaftar') {
       // return res.status(500).json({ statusCode: 500, message: error.message });
       // } else {
-      return res.status(500).json({ statusCode: 500, message: 'Error uploading data and file' });
+      return res
+        .status(500)
+        .json({ statusCode: 500, message: "Error uploading data and file" });
       // }
     }
-  }
-);
+  });
 
 // Start the server
 const port = process.env.PORT || 3000;
