@@ -57,11 +57,12 @@ const dataSchema = new mongoose.Schema({
   bundle: Number,
   day: Number,
   kodeReferral: String,
-  buktiTransfer: {
-    file: String,
-    filename: String,
-    mimetype: String,
-  },
+  buktiTransfer: String,
+  // buktiTransfer: {
+  //   file: String,
+  //   filename: String,
+  //   mimetype: String,
+  // },
   namaAkunTransfer: String,
 });
 
@@ -80,26 +81,26 @@ app.get("/getData", async (req, res) => {
 });
 
 // Define a route for getting images
-app.get("/getImage", async (req, res) => {
-  try {
-    let id = new mongoose.mongo.ObjectId(req.query.id);
-    const datas = await Data.find({ _id: id });
-    if (datas.length > 0) {
-      const data = datas[0];
-      const imageBuffer = Buffer.from(
-        data.buktiTransfer.file.split(",")[1],
-        "base64"
-      );
-      res.setHeader("Content-Type", data.buktiTransfer.mimetype);
-      res.setHeader("Content-Length", imageBuffer.length);
-      res.end(imageBuffer);
-    } else {
-      res.send("Image not found.");
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
+// app.get("/getImage", async (req, res) => {
+//   try {
+//     let id = new mongoose.mongo.ObjectId(req.query.id);
+//     const datas = await Data.find({ _id: id });
+//     if (datas.length > 0) {
+//       const data = datas[0];
+//       const imageBuffer = Buffer.from(
+//         data.buktiTransfer.file.split(",")[1],
+//         "base64"
+//       );
+//       res.setHeader("Content-Type", data.buktiTransfer.mimetype);
+//       res.setHeader("Content-Length", imageBuffer.length);
+//       res.end(imageBuffer);
+//     } else {
+//       res.send("Image not found.");
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 
 // Define a route for handling form data and file uploads
 app.post("/upload", async (req, res) => {
@@ -113,11 +114,12 @@ app.post("/upload", async (req, res) => {
       bundle: req.body.bundle,
       day: req.body.day,
       kodeReferral: req.body.kodeReferral.trim(),
-      buktiTransfer: {
-        file: req.body.buktiTransfer.file,
-        filename: req.body.buktiTransfer.filename,
-        mimetype: req.body.buktiTransfer.mimetype,
-      },
+      buktiTransfer: req.body.buktiTransfer.trim(),
+      // buktiTransfer: {
+      //   file: req.body.buktiTransfer.file,
+      //   filename: req.body.buktiTransfer.filename,
+      //   mimetype: req.body.buktiTransfer.mimetype,
+      // },
       namaAkunTransfer: req.body.namaAkunTransfer.trim(),
     });
     data.save();
