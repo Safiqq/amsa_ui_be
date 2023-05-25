@@ -32,17 +32,20 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
 // Connect to MongoDB
 mongoose.set("strictQuery", false);
-mongoose
-  .connect(process.env.MONGODB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
+connection();
+async function connection() {
+  try {
+    const connectionParams = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    };
+    await mongoose.connect(process.env.MONGODB_URL, connectionParams);
+    console.log("connected to database");
+  } catch (error) {
+    console.log(error);
+    console.log("could not connect to database");
+  }
+}
 
 // Define a schema for the data collection
 const dataSchema = new mongoose.Schema({
