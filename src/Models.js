@@ -11,12 +11,12 @@ const dataSchema = new Schema({
   bundle: Number,
   day: Number,
   kodeReferral: String,
-  // buktiTransfer: String,
-  buktiTransfer: {
-    file: String,
-    filename: String,
-    mimetype: String,
-  },
+  buktiTransfer: String,
+  // buktiTransfer: {
+  //   file: String,
+  //   filename: String,
+  //   mimetype: String,
+  // },
   namaAkunTransfer: String,
 });
 
