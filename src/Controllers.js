@@ -38,7 +38,7 @@ exports.buatPeserta = async (req, res) => {
       });
       dataBuddies.save();
     }
-    return res.status(201).json({
+    res.status(201).send({
       statusCode: 201,
       message: "Data and file uploaded successfully",
     });
@@ -50,9 +50,7 @@ exports.buatPeserta = async (req, res) => {
     // if (error.message === 'Email sudah terdaftar') {
     // return res.status(500).json({ statusCode: 500, message: error.message });
     // } else {
-    return res
-      .status(500)
-      .json({ statusCode: 500, message: "Error uploading data and file" });
+    res.sendStatus(400);
     // }
   }
 };
@@ -63,6 +61,7 @@ exports.getData = async (req, res) => {
     res.send(datas);
     console.log(datas);
   } catch (err) {
+    res.sendStatus(400);
     console.log(err);
   }
 };
