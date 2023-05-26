@@ -49,28 +49,6 @@ async function connection() {
   }
 }
 
-// Define a route for getting images
-// app.get("/getImage", async (req, res) => {
-//   try {
-//     let id = new mongoose.mongo.ObjectId(req.query.id);
-//     const datas = await Data.find({ _id: id });
-//     if (datas.length > 0) {
-//       const data = datas[0];
-//       const imageBuffer = Buffer.from(
-//         data.buktiTransfer.file.split(",")[1],
-//         "base64"
-//       );
-//       res.setHeader("Content-Type", data.buktiTransfer.mimetype);
-//       res.setHeader("Content-Length", imageBuffer.length);
-//       res.end(imageBuffer);
-//     } else {
-//       res.send("Image not found.");
-//     }
-//   } catch (err) {
-//     console.log(err);
-//   }
-// });
-
 const routes = require("./src/Routes");
 app.use("/api", routes);
 
