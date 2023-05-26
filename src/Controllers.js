@@ -19,7 +19,7 @@ exports.buatPeserta = async (req, res) => {
       // },
       namaAkunTransfer: req.body.namaAkunTransfer.trim(),
     });
-    data.save();
+    await data.save();
 
     const bundleBuddies = req.body.bundleBuddies;
     for (let i = 0; i < bundleBuddies.length; i++) {
@@ -36,20 +36,19 @@ exports.buatPeserta = async (req, res) => {
         kodeReferral: req.body.kodeReferral.trim(),
         namaAkunTransfer: req.body.namaAkunTransfer.trim(),
       });
-      dataBuddies.save();
+      await dataBuddies.save();
     }
     res.status(201).send({
       statusCode: 201,
       message: "Data and file uploaded successfully",
     });
   } catch (error) {
-    for (let i = 0; i < emails.length; i++) {
-      models.peserta.deleteOne({ email: emails[i] });
+    models.peserta.deleteOne({ email: req.body.email.trim() });
+    for (let i = 0; i < bundleBuddies.length; i++) {
+      models.peserta.deleteOne({ email: bundleBuddies[i].email.trim() });
     }
     console.error("Error uploading data and file:", error);
-    // if (error.message === 'Email sudah terdaftar') {
-    // return res.status(500).json({ statusCode: 500, message: error.message });
-    // } else {
+
     res.sendStatus(400);
     // }
   }
