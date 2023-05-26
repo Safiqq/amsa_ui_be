@@ -9,7 +9,10 @@ const app = express();
 // Enable CORS for all routes
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
   res.setHeader("Access-Control-Allow-Headers", "Content-type, Authorization");
   next();
 });
@@ -72,7 +75,7 @@ const routes = require("./src/Routes");
 app.use("/api", routes);
 
 // Start the server
-const port = process.env.PORT || 8080;
+const port = 8080;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
