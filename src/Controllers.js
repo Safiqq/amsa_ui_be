@@ -11,12 +11,12 @@ exports.buatPeserta = async (req, res) => {
       bundle: req.body.bundle,
       day: req.body.day,
       kodeReferral: req.body.kodeReferral.trim(),
-      // buktiTransfer: req.body.buktiTransfer.trim(),
-      buktiTransfer: {
-        file: req.body.buktiTransfer.file,
-        filename: req.body.buktiTransfer.filename,
-        mimetype: req.body.buktiTransfer.mimetype,
-      },
+      buktiTransfer: req.body.buktiTransfer.trim(),
+      // buktiTransfer: {
+      //   file: req.body.buktiTransfer.file,
+      //   filename: req.body.buktiTransfer.filename,
+      //   mimetype: req.body.buktiTransfer.mimetype,
+      // },
       namaAkunTransfer: req.body.namaAkunTransfer.trim(),
     });
     data.save();
@@ -66,23 +66,23 @@ exports.getData = async (req, res) => {
   }
 };
 
-exports.getImage = async (req, res) => {
-  try {
-    let id = new mongoose.mongo.ObjectId(req.query.id);
-    const datas = await models.peserta.find({ _id: id });
-    if (datas.length > 0) {
-      const data = datas[0];
-      const imageBuffer = Buffer.from(
-        data.buktiTransfer.file.split(",")[1],
-        "base64"
-      );
-      res.setHeader("Content-Type", data.buktiTransfer.mimetype);
-      res.setHeader("Content-Length", imageBuffer.length);
-      res.end(imageBuffer);
-    } else {
-      res.send("Image not found.");
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
+// exports.getImage = async (req, res) => {
+//   try {
+//     let id = new mongoose.mongo.ObjectId(req.query.id);
+//     const datas = await models.peserta.find({ _id: id });
+//     if (datas.length > 0) {
+//       const data = datas[0];
+//       const imageBuffer = Buffer.from(
+//         data.buktiTransfer.file.split(",")[1],
+//         "base64"
+//       );
+//       res.setHeader("Content-Type", data.buktiTransfer.mimetype);
+//       res.setHeader("Content-Length", imageBuffer.length);
+//       res.end(imageBuffer);
+//     } else {
+//       res.send("Image not found.");
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };

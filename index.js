@@ -38,10 +38,7 @@ async function connection() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     };
-    await mongoose.connect(
-      "mongodb+srv://admin:qLal4OLZP6y859cu@cluster0.paowfrl.mongodb.net/",
-      connectionParams
-    );
+    await mongoose.connect(process.env.MONGODB_URL, connectionParams);
     console.log("connected to database");
   } catch (error) {
     console.log(error);
