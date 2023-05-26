@@ -4,6 +4,6 @@ const Controllers = require("./Controllers");
 
 // peserta
 app.post("/register", Controllers.buatPeserta);
-app.post("/getData", Controllers.getData);
+app.get("/getData", Controllers.getData);
 
 module.exports = app;
