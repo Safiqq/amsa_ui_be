@@ -8,16 +8,12 @@ const app = express();
 
 // Enable CORS for all routes
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, OPTIONS, PATCH, DELETE, POST, PUT"
-  );
-  // res.setHeader("Access-Control-Allow-Headers", "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version");
-  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-type, Authorization");
   next();
 });
+
 app.use(
   cors({
     origin: "*",
@@ -27,8 +23,8 @@ app.use(
 );
 
 // Set body limit
-app.use(bodyParser.json({ limit: "10mb" }));
-app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // Connect to MongoDB
 mongoose.set("strictQuery", false);
@@ -46,17 +42,6 @@ async function connection() {
     console.log("could not connect to database");
   }
 }
-
-// Define a route for getting datas
-app.get("/getData", async (req, res) => {
-  try {
-    const datas = await Data.find({});
-    res.send(datas);
-    console.log(datas);
-  } catch (err) {
-    console.log(err);
-  }
-});
 
 // Define a route for getting images
 // app.get("/getImage", async (req, res) => {
@@ -81,10 +66,10 @@ app.get("/getData", async (req, res) => {
 // });
 
 const routes = require("./src/Routes");
-app.use(routes);
+app.use("/api", routes);
 
 // Start the server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });

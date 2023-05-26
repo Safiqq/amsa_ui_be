@@ -2,7 +2,7 @@ const models = require("./Models");
 
 exports.buatPeserta = async (req, res) => {
   try {
-    const data = new models.Data({
+    const data = new models.peserta({
       nama: req.body.nama.trim(),
       noHp: req.body.noHp.trim(),
       email: req.body.email.trim(),
@@ -25,7 +25,7 @@ exports.buatPeserta = async (req, res) => {
     for (let i = 0; i < bundleBuddies.length; i++) {
       let email = bundleBuddies[i].email.trim();
       // console.log(user);
-      const dataBuddies = new models.Data({
+      const dataBuddies = new models.peserta({
         nama: bundleBuddies[i].nama.trim(),
         noHp: bundleBuddies[i].noHp.trim(),
         email: email,
@@ -44,7 +44,7 @@ exports.buatPeserta = async (req, res) => {
     });
   } catch (error) {
     for (let i = 0; i < emails.length; i++) {
-      models.Data.deleteOne({ email: emails[i] });
+      models.peserta.deleteOne({ email: emails[i] });
     }
     console.error("Error uploading data and file:", error);
     // if (error.message === 'Email sudah terdaftar') {
@@ -54,5 +54,15 @@ exports.buatPeserta = async (req, res) => {
       .status(500)
       .json({ statusCode: 500, message: "Error uploading data and file" });
     // }
+  }
+};
+
+exports.getData = async (req, res) => {
+  try {
+    const datas = await models.peserta.find({});
+    res.send(datas);
+    console.log(datas);
+  } catch (err) {
+    console.log(err);
   }
 };

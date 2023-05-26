@@ -21,8 +21,8 @@ const dataSchema = new Schema({
 });
 
 // Create a model for the data collection
-const Data = mongoose.model("Regist", dataSchema);
+const peserta = mongoose.model("peserta", dataSchema);
 
 module.exports = {
-  Data,
+  peserta,
 };
